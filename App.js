@@ -1,26 +1,24 @@
 // App.js
 
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StyleSheet } from 'react-native';
-import Domain from './pages/Domain';
-import Login from './pages/Login';
-import Account from './pages/account';
-import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
-import { QueryClient, QueryClientProvider } from 'react-query'; // Import QueryClient and QueryClientProvider
-// import { ReactQueryDevtools } from 'react-query/devtools'; // Optional: Devtools for React Query
-
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { StyleSheet } from "react-native";
+import Domain from "./pages/Domain";
+import Login from "./pages/Login";
+import Account from "./pages/account";
+import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
+import { QueryClient, QueryClientProvider } from "react-query"; 
 const Stack = createNativeStackNavigator();
 
-const queryClient = new QueryClient(); // Create an instance of QueryClient
+const queryClient = new QueryClient(); 
 
 export default function App() {
   const theme = {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      primary: 'aliceblue',
+      primary: "aliceblue",
     },
   };
 
@@ -43,7 +41,6 @@ export default function App() {
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>
-      {/* <ReactQueryDevtools initialIsOpen={false} /> Optional: Devtools for React Query */}
     </QueryClientProvider>
   );
 }
@@ -51,8 +48,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'red',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "red",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

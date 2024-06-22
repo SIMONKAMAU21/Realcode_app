@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -155,11 +153,16 @@ const Accounts = () => {
               mode="contained"
               style={[
                 styles.suspendAccountButton,
-                { backgroundColor: account.status === "suspended" ? "#00ff00" : "#ff0000" }, // Dynamic background color based on account status
+                {
+                  backgroundColor:
+                    account.status === "suspended" ? "#00ff00" : "#ff0000",
+                }, // Dynamic background color based on account status
               ]}
               onPress={() => handleModalOpen("suspendAccountVisible", account)}
             >
-              {account.status === "suspended" ? "Unsuspend Account" : "Suspend Account"}
+              {account.status === "suspended"
+                ? "Unsuspend Account"
+                : "Suspend Account"}
             </Button>
           </View>
         ))
@@ -245,4 +248,3 @@ const styles = StyleSheet.create({
 });
 
 export default Accounts;
-

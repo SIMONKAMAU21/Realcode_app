@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Alert, ToastAndroid, Image } from "react-native";
-import { TextInput, Button, useTheme, Text, ActivityIndicator } from "react-native-paper";
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  TextInput,
+  Button,
+  useTheme,
+  Text,
+  ActivityIndicator,
+} from "react-native-paper";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppSettings } from "../components/utils/Appsettings";
 
 const Login = ({ navigation }) => {
- 
   const { data: appSettings, isLoading, isError, error } = useAppSettings();
 
   if (isLoading) {
@@ -20,21 +25,21 @@ const Login = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [domain, setDomain] = useState('');
+  const [domain, setDomain] = useState("");
 
   useEffect(() => {
     const getDomain = async () => {
       try {
-        const storedDomain = await AsyncStorage.getItem('userdomain');
+        const storedDomain = await AsyncStorage.getItem("userdomain");
         if (storedDomain) {
           setDomain(storedDomain);
         } else {
-          Alert.alert('Domain not set', 'Please set the domain first.');
-          navigation.navigate('Domain');
+          Alert.alert("Domain not set", "Please set the domain first.");
+          navigation.navigate("Domain");
         }
       } catch (error) {
-        console.error('Error retrieving domain from storage:', error);
-        Alert.alert('Error', 'Failed to retrieve domain. Please try again.');
+        console.error("Error retrieving domain from storage:", error);
+        Alert.alert("Error", "Failed to retrieve domain. Please try again.");
       }
     };
     getDomain();
@@ -45,20 +50,23 @@ const Login = ({ navigation }) => {
     try {
       const response = await axios.post(`https://${domain}/api/login`, {
         email: username,
-        password: password
+        password: password,
       });
 
       const data = response.data;
       if (data.success) {
         ToastAndroid.show(data.message, ToastAndroid.LONG);
-        await AsyncStorage.setItem('userToken', data.data.token);
+        await AsyncStorage.setItem("userToken", data.data.token);
         navigation.navigate("account");
       } else {
-        Alert.alert('Login Failed', data.message);
+        Alert.alert("Login Failed", data.message);
       }
     } catch (error) {
-      Alert.alert('Login Failed', 'An error occurred during login. Please try again.');
-      console.error('Login error:', error);
+      Alert.alert(
+        "Login Failed",
+        "An error occurred during login. Please try again."
+      );
+      console.error("Login error:", error);
     } finally {
       setLoading(false);
     }
@@ -73,7 +81,12 @@ const Login = ({ navigation }) => {
           resizeMode="contain"
         />
       )}
-      <View style={[styles.loginContainer,{backgroundColor:appSettings.primary_color}]}>
+      <View
+        style={[
+          styles.loginContainer,
+          { backgroundColor: appSettings.primary_color },
+        ]}
+      >
         <TextInput
           mode="outlined"
           label="Username"
@@ -94,7 +107,10 @@ const Login = ({ navigation }) => {
         <Button
           mode="contained"
           onPress={handleLogin}
-          style={[styles.button,{backgroundColor:appSettings.tertiary_color}]}
+          style={[
+            styles.button,
+            { backgroundColor: appSettings.tertiary_color },
+          ]}
           loading={loading}
           disabled={loading}
         >
@@ -108,15 +124,15 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white'
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
   },
   loginContainer: {
-    width: '90%',
+    width: "90%",
     display: "flex",
     alignItems: "center",
-    backgroundColor: 'rgba(205, 239, 133, 0.5)',
+    backgroundColor: "rgba(205, 239, 133, 0.5)",
     padding: 16,
     borderRadius: 8,
   },
@@ -128,14 +144,14 @@ const styles = StyleSheet.create({
   input: {
     width: "89%",
     marginBottom: 16,
-    color: "black"
+    color: "black",
   },
   button: {
     width: "40%",
-    backgroundColor: '#2E97C0',
+    backgroundColor: "#2E97C0",
   },
   error: {
-    color: 'red',
+    color: "red",
     marginTop: 10,
   },
 });
