@@ -7,7 +7,7 @@ import { useAppSettings } from "../components/utils/Appsettings";
 
 const Domain = ({ navigation }) => {
   const [domain, setDomain] = useState("");
-  const { data: appSettings, isLoading, isError, error } = useAppSettings();
+  const { isLoading } = useAppSettings();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -19,15 +19,7 @@ const Domain = ({ navigation }) => {
       console.log("storedDomain", storedDomain);
     };
     checkDomain();
-  });
-
-  if (isLoading) {
-    return <ActivityIndicator size="large" color="#0077b6" />;
-  }
-
-  if (isError) {
-    return <Text style={styles.errorText}>Error: {error}</Text>;
-  }
+  }, []);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -43,12 +35,27 @@ const Domain = ({ navigation }) => {
           await AsyncStorage.setItem("userdomain", domain);
           ToastAndroid.show(response.data.message, ToastAndroid.SHORT);
           navigation.navigate("Login");
-          setDomain("")
+          setDomain("");
         } else {
           Alert.alert("Invalid domain", "The provided domain is not allowed.");
         }
       } catch (error) {
-        Alert.alert("Error", "Failed to verify domain. Please try again.");
+        if (error.response) {
+          Alert.alert(
+            "Error",
+            `Server responded with ${error.response.status}. Please try again.`
+          );
+        } else if (error.request) {
+          Alert.alert(
+            "Error",
+            "No response received from server. Please check your internet connection."
+          );
+        } else {
+          Alert.alert(
+            "Error",
+            "An unexpected error occurred. Please try again later."
+          );
+        }
       } finally {
         setLoading(false);
       }
@@ -60,15 +67,8 @@ const Domain = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.mikro, { color: appSettings.primary_color }]}>
-        MIKROTIKTECH
-      </Text>
-      <View
-        style={[
-          styles.formContainer,
-          { backgroundColor: appSettings.primary_color },
-        ]}
-      >
+      <Text style={styles.mikro}>MIKROTIKTECH</Text>
+      <View style={styles.formContainer}>
         <TextInput
           mode="outlined"
           label="Domain"
@@ -76,18 +76,13 @@ const Domain = ({ navigation }) => {
           value={domain}
           onChangeText={(text) => setDomain(text)}
           style={styles.input}
-          theme={{ colors: { primary: appSettings.primary_color } }}
         />
         <Button
           mode="contained"
           onPress={handleSubmit}
           loading={loading}
-          style={[
-            styles.button,
-            { backgroundColor: appSettings.tertiary_color },
-          ]}
+          style={styles.button}
           labelStyle={{ color: "white" }}
-          theme={{ colors: { primary: appSettings.tertiary_color } }}
         >
           Submit
         </Button>
@@ -118,16 +113,11 @@ const styles = StyleSheet.create({
   button: {
     width: "100%",
     marginTop: 8,
+    backgroundColor: "green",
   },
   mikro: {
     fontWeight: "900",
     fontSize: 34,
-    fontStyle: "italic",
-    fontFamily: "serif",
-  },
-  errorText: {
-    fontSize: 18,
-    color: "red",
     fontStyle: "italic",
     fontFamily: "serif",
   },

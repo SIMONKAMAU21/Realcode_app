@@ -58,16 +58,24 @@ const Login = ({ navigation }) => {
   };
 
   if (isLoading) {
-    return <ActivityIndicator size="large" color="#0077b6" />;
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator animating={true} color="#0077b6" />
+      </View>
+    );
   }
 
   if (isError) {
-    return <Text style={styles.errorText}>Error: {error}</Text>;
+    return (
+      <View style={styles.container}>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
-      {appSettings.logo && (
+      {appSettings && appSettings.logo && (
         <Image
           source={{ uri: appSettings.logo }}
           style={styles.logo}
@@ -130,8 +138,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   logo: {
-    width: 250,
-    height: 150,
+    width: 300,
+    height: 300,
     marginBottom: 20,
   },
   input: {

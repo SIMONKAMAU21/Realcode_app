@@ -44,8 +44,8 @@ export default function App() {
   useEffect(() => {
     const checkDomain = async () => {
       try {
-        const storedToken = await AsyncStorage.getItem("userToken");
-        if (storedToken) {
+        const storedDomain = await AsyncStorage.getItem("userdomain");
+        if (storedDomain) {
           setInitialRoute("Login");
         } else {
           setInitialRoute("Domain");
@@ -59,6 +59,7 @@ export default function App() {
     };
     checkDomain();
   }, []);
+  
 
   const theme = {
     ...DefaultTheme,
@@ -76,23 +77,29 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <PaperProvider theme={theme}>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={initialRoute}>
-            <Stack.Screen
-              options={{ headerShown: false }}
-              name="Domain"
-              component={Domain}
-            />
-            <Stack.Screen
-              options={{ headerShown: false }}
-              name="Login"
-              component={Login}
-            />
-            <Stack.Screen
-              options={{ headerShown: false }}
-              name="Home"
-              component={HomeTabs}
-            />
-          </Stack.Navigator>
+        <Stack.Navigator initialRouteName={initialRoute}>
+  {initialRoute === "Login" ? (
+    <>
+      <Stack.Screen
+        options={{ headerShown: false }}
+        name="Login"
+        component={Login}
+      />
+      <Stack.Screen
+        options={{ headerShown: false }}
+        name="Home"
+        component={HomeTabs}
+      />
+    </>
+  ) : (
+    <Stack.Screen
+      options={{ headerShown: false }}
+      name="Domain"
+      component={Domain}
+    />
+  )}
+</Stack.Navigator>
+
         </NavigationContainer>
       </PaperProvider>
     </QueryClientProvider>
