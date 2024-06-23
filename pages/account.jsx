@@ -13,6 +13,7 @@ import Makepayment from "../components/Makepayment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ToastAndroid } from "react-native";
 import SuspendAccountModal from "../components/Suspendaccount";
+
 const Accounts = () => {
   const [modals, setModals] = useState({
     makePaymentVisible: false,

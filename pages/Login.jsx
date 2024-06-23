@@ -41,7 +41,9 @@ const Login = ({ navigation }) => {
       if (data.success) {
         ToastAndroid.show(data.message, ToastAndroid.LONG);
         await AsyncStorage.setItem("userToken", data.data.token);
-        navigation.navigate("Account");
+        navigation.navigate("Home");
+        setUsername("");
+        setPassword("");
       } else {
         Alert.alert("Login Failed", data.message);
       }

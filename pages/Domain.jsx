@@ -43,6 +43,7 @@ const Domain = ({ navigation }) => {
           await AsyncStorage.setItem("userdomain", domain);
           ToastAndroid.show(response.data.message, ToastAndroid.SHORT);
           navigation.navigate("Login");
+          setDomain("")
         } else {
           Alert.alert("Invalid domain", "The provided domain is not allowed.");
         }
