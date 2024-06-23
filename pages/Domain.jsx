@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Alert, Image, ToastAndroid } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, Alert, ToastAndroid } from "react-native";
 import { TextInput, Button, ActivityIndicator, Text } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -8,27 +8,37 @@ import { useAppSettings } from "../components/utils/Appsettings";
 const Domain = ({ navigation }) => {
   const [domain, setDomain] = useState("");
   const { data: appSettings, isLoading, isError, error } = useAppSettings();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const checkDomain = async () => {
+      const storedDomain = await AsyncStorage.getItem("userdomain");
+      if (storedDomain) {
+        navigation.navigate("Login");
+      }
+      console.log("storedDomain", storedDomain);
+    };
+    checkDomain();
+  });
 
   if (isLoading) {
     return <ActivityIndicator size="large" color="#0077b6" />;
   }
 
   if (isError) {
-    return <Text>Error: {error}</Text>; // Display the error message if there's an error
+    return <Text style={styles.errorText}>Error: {error}</Text>;
   }
 
   const handleSubmit = async () => {
+    setLoading(true);
     const domainPattern = /^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/;
 
     if (domainPattern.test(domain)) {
       try {
         const response = await axios.post(
           "https://landlord.mikrotiktech.co.ke/api/app/allowed",
-          {
-            domain: domain,
-          }
+          { domain }
         );
-
         if (response.data.data === "Successful") {
           await AsyncStorage.setItem("userdomain", domain);
           ToastAndroid.show(response.data.message, ToastAndroid.SHORT);
@@ -37,24 +47,27 @@ const Domain = ({ navigation }) => {
           Alert.alert("Invalid domain", "The provided domain is not allowed.");
         }
       } catch (error) {
-        console.error('Domain verification error:', error);
         Alert.alert("Error", "Failed to verify domain. Please try again.");
+      } finally {
+        setLoading(false);
       }
     } else {
       Alert.alert("Invalid domain", "Please enter a valid domain.");
+      setLoading(false);
     }
   };
 
   return (
     <View style={styles.container}>
-      {appSettings.logo && (
-        <Image
-          source={{ uri: appSettings.logo }}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-      )}
-      <View style={[styles.formContainer, { backgroundColor: appSettings.primary_color }]}>
+      <Text style={[styles.mikro, { color: appSettings.primary_color }]}>
+        MIKROTIKTECH
+      </Text>
+      <View
+        style={[
+          styles.formContainer,
+          { backgroundColor: appSettings.primary_color },
+        ]}
+      >
         <TextInput
           mode="outlined"
           label="Domain"
@@ -67,7 +80,11 @@ const Domain = ({ navigation }) => {
         <Button
           mode="contained"
           onPress={handleSubmit}
-          style={[styles.button,{backgroundColor:appSettings.tertiary_color}]}
+          loading={loading}
+          style={[
+            styles.button,
+            { backgroundColor: appSettings.tertiary_color },
+          ]}
           labelStyle={{ color: "white" }}
           theme={{ colors: { primary: appSettings.tertiary_color } }}
         >
@@ -86,14 +103,10 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#fff",
   },
-  logo: {
-    width: 150,
-    height: 150,
-    marginBottom: 20,
-  },
   formContainer: {
     width: "80%",
     padding: 16,
+    marginTop: 20,
     borderRadius: 10,
     alignItems: "center",
   },
@@ -104,7 +117,18 @@ const styles = StyleSheet.create({
   button: {
     width: "100%",
     marginTop: 8,
-    backgroundColor: "#2E97C0",
+  },
+  mikro: {
+    fontWeight: "900",
+    fontSize: 34,
+    fontStyle: "italic",
+    fontFamily: "serif",
+  },
+  errorText: {
+    fontSize: 18,
+    color: "red",
+    fontStyle: "italic",
+    fontFamily: "serif",
   },
 });
 

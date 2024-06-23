@@ -1,27 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Alert, ToastAndroid, Image } from "react-native";
-import {
-  TextInput,
-  Button,
-  useTheme,
-  Text,
-  ActivityIndicator,
-} from "react-native-paper";
+import { TextInput, Button, ActivityIndicator, Text } from "react-native-paper";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppSettings } from "../components/utils/Appsettings";
 
 const Login = ({ navigation }) => {
   const { data: appSettings, isLoading, isError, error } = useAppSettings();
-
-  if (isLoading) {
-    return <ActivityIndicator size="large" color="#0077b6" />;
-  }
-
-  if (isError) {
-    return <Text>Error:</Text>;
-  }
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -38,7 +23,6 @@ const Login = ({ navigation }) => {
           navigation.navigate("Domain");
         }
       } catch (error) {
-        console.error("Error retrieving domain from storage:", error);
         Alert.alert("Error", "Failed to retrieve domain. Please try again.");
       }
     };
@@ -57,7 +41,7 @@ const Login = ({ navigation }) => {
       if (data.success) {
         ToastAndroid.show(data.message, ToastAndroid.LONG);
         await AsyncStorage.setItem("userToken", data.data.token);
-        navigation.navigate("account");
+        navigation.navigate("Account");
       } else {
         Alert.alert("Login Failed", data.message);
       }
@@ -66,11 +50,18 @@ const Login = ({ navigation }) => {
         "Login Failed",
         "An error occurred during login. Please try again."
       );
-      console.error("Login error:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  if (isLoading) {
+    return <ActivityIndicator size="large" color="#0077b6" />;
+  }
+
+  if (isError) {
+    return <Text style={styles.errorText}>Error: {error}</Text>;
+  }
 
   return (
     <View style={styles.container}>
@@ -150,9 +141,11 @@ const styles = StyleSheet.create({
     width: "40%",
     backgroundColor: "#2E97C0",
   },
-  error: {
+  errorText: {
+    fontSize: 18,
     color: "red",
-    marginTop: 10,
+    fontStyle: "italic",
+    fontFamily: "serif",
   },
 });
 
