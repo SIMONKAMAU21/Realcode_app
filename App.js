@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { ActivityIndicator, StyleSheet } from "react-native";
 import Domain from "./pages/Domain";
 import Login from "./pages/Login";
@@ -13,6 +14,7 @@ import * as Updates from 'expo-updates';
 import Icon from "react-native-vector-icons/Ionicons";
 
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 const queryClient = new QueryClient();
 
 const HomeTabs = () => {
@@ -23,15 +25,15 @@ const HomeTabs = () => {
           let iconName;
           if (route.name === "Accounts") {
             iconName = "home";
-          } else if (route.name === "Settings") {
-            iconName = "settings";
+          } else if (route.name === "info") {
+            iconName = "information-circle";
           }
           return <Icon name={iconName} size={size} color={color} />;
         },
       })}
     >
       <Tab.Screen name="Accounts" component={Accounts} />
-      <Tab.Screen name="Settings" component={Settings} />
+      <Tab.Screen name="info" component={Settings} />
     </Tab.Navigator>
   );
 };

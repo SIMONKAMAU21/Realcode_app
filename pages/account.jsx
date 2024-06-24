@@ -46,12 +46,14 @@ const Accounts = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log('response', response)
 
       if (!response.ok) {
         throw new Error("Failed to fetch account data");
       }
 
       const data = await response.json();
+      console.log('data', data)
       if (Array.isArray(data.data)) {
         setTimeout(() => {
           setAccounts(data.data);
