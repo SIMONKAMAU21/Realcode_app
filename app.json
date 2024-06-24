@@ -4,7 +4,7 @@
     "slug": "realcode-isp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/realcode.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -28,6 +28,15 @@
       "eas": {
         "projectId": "30222de9-1eff-43d4-8289-86fc5b3b87c1"
       }
+    },
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/30222de9-1eff-43d4-8289-86fc5b3b87c1"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }
