@@ -4,6 +4,7 @@ import { TextInput, Button, ActivityIndicator, Text } from "react-native-paper";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppSettings } from "../components/utils/Appsettings";
+import { CommonActions } from '@react-navigation/native';
 
 const Login = ({ navigation }) => {
   const { data: appSettings, isLoading, isError, error } = useAppSettings();
@@ -13,20 +14,30 @@ const Login = ({ navigation }) => {
   const [domain, setDomain] = useState("");
 
   useEffect(() => {
-    const getDomain = async () => {
+    const checkToken = async () => {
       try {
-        const storedDomain = await AsyncStorage.getItem("userdomain");
-        if (storedDomain) {
-          setDomain(storedDomain);
+        const token = await AsyncStorage.getItem("userToken");
+        if (token) {
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: "Home" }],
+            })
+          );
         } else {
-          Alert.alert("Domain not set", "Please set the domain first.");
-          navigation.navigate("Domain");
+          const storedDomain = await AsyncStorage.getItem("userdomain");
+          if (storedDomain) {
+            setDomain(storedDomain);
+          } else {
+            Alert.alert("Domain not set", "Please set the domain first.");
+            navigation.navigate("Domain");
+          }
         }
       } catch (error) {
-        Alert.alert("Error", "Failed to retrieve domain. Please try again.");
+        Alert.alert("Error", "Failed to retrieve data. Please try again.");
       }
     };
-    getDomain();
+    checkToken();
   }, [navigation]);
 
   const handleLogin = async () => {
@@ -41,7 +52,12 @@ const Login = ({ navigation }) => {
       if (data.success) {
         ToastAndroid.show(data.message, ToastAndroid.LONG);
         await AsyncStorage.setItem("userToken", data.data.token);
-        navigation.navigate("Home");
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: "Home" }],
+          })
+        );
         setUsername("");
         setPassword("");
       } else {

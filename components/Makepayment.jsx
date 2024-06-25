@@ -4,12 +4,10 @@ import { Button, TextInput, useTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-export default function MakePayment({ visible, onClose }) {
+export default function MakePayment({ visible, onClose ,accountNumber}) {
   const [amount, setAmount] = useState('');
-  const [accountNumber, setAccountNumber] = useState('');
   const [telephone, setTelephone] = useState('');
 
-  const theme = useTheme();
 
   const handleInitiatePayment = async () => {
     try {
@@ -21,7 +19,7 @@ export default function MakePayment({ visible, onClose }) {
         return;
       }
 
-      if (!telephone || !amount || !accountNumber) {
+      if (!telephone || !amount) {
         Alert.alert('Validation Error', 'Please fill in all fields.');
         return;
       }
@@ -31,7 +29,7 @@ export default function MakePayment({ visible, onClose }) {
         {
           telephone: telephone,
           amount: amount,
-          account_number: accountNumber,
+          account_number :accountNumber
         },
         {
           headers: {
@@ -39,7 +37,6 @@ export default function MakePayment({ visible, onClose }) {
           },
         }
       );
-
       const data = response.data;
       if (data.success) {
         Alert.alert('Payment Initiated', data.message);
@@ -68,14 +65,7 @@ export default function MakePayment({ visible, onClose }) {
             placeholder="Amount"
             value={amount}
             onChangeText={setAmount}
-            keyboardType="phone-pad"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Account Number"
-            value={accountNumber}
-            onChangeText={setAccountNumber}
-            keyboardType="phone-pad"
+            keyboardType="numeric"
           />
           <TextInput
             style={styles.input}
@@ -89,7 +79,7 @@ export default function MakePayment({ visible, onClose }) {
               Close
             </Button>
             <Button mode="contained" style={styles.submitButton} onPress={handleInitiatePayment}>
-              Initial
+              Initiate
             </Button>
           </View>
         </View>

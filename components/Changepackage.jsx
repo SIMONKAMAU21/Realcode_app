@@ -5,23 +5,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 
-export default function ChangePackageModal({ visible, onClose, onSubmit, accountId,accountNumber }) {
+export default function ChangePackageModal({ visible, onClose, onSubmit, accountId, accountNumber, account_type }) {
   const theme = useTheme();
   const [selectedPackage, setSelectedPackage] = useState('');
   const [packages, setPackages] = useState([]);
+  const [isHotspot, setIsHotspot] = useState(false);
 
-  
-
-  
   useEffect(() => {
     if (visible && accountId) {
       fetchPackages(accountId);
+      if (account_type === 'Hotspot') {
+        setIsHotspot(true);
+      } else {
+        setIsHotspot(false);
+      }
     }
-  }, [visible, accountId]);
+  }, [visible, accountId, account_type]);
+
   const fetchPackages = async (accountId) => {
     const domain = await AsyncStorage.getItem("userdomain")
     const apiUrl = `https://${domain}/api/packages/list?id=${accountId}`;
-    const token= await AsyncStorage.getItem("userToken")
+    const token = await AsyncStorage.getItem("userToken");
 
     try {
       const response = await axios.get(apiUrl, {
@@ -32,7 +36,7 @@ export default function ChangePackageModal({ visible, onClose, onSubmit, account
 
       if (response.data.success) {
         setPackages(response.data.data);
-        ToastAndroid.show(response.data.message,ToastAndroid.TOP)
+        ToastAndroid.show(response.data.message, ToastAndroid.TOP);
       } else {
         Alert.alert('Error', response.data.message || 'Failed to fetch packages.');
       }
@@ -46,7 +50,7 @@ export default function ChangePackageModal({ visible, onClose, onSubmit, account
       Alert.alert('Error', 'Please select a package.');
       return;
     }
-    const domain = await AsyncStorage.getItem("userdomain")
+    const domain = await AsyncStorage.getItem("userdomain");
     try {
       const apiUrl = `https://${domain}/api/change/package`;
       const token = await AsyncStorage.getItem('userToken');
@@ -87,6 +91,7 @@ export default function ChangePackageModal({ visible, onClose, onSubmit, account
             selectedValue={selectedPackage}
             onValueChange={(itemValue) => setSelectedPackage(itemValue)}
             style={styles.picker}
+            enabled={!isHotspot}
           >
             {packages.map((pkg) => (
               <Picker.Item key={pkg.id} label={`${pkg.bandwidth_name} @ KES ${pkg.price}`} value={pkg.id} />

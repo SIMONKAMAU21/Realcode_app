@@ -6,13 +6,14 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import { Text, Button, useTheme } from "react-native-paper";
+import { Text, Button } from "react-native-paper";
 import ChangePackageModal from "../components/Changepackage";
 import Confirmpayment from "../components/Confirmpayment";
 import Makepayment from "../components/Makepayment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ToastAndroid } from "react-native";
 import SuspendAccountModal from "../components/Suspendaccount";
+import ChangeWiFiModal from "../components/Changewifi";
 
 const Accounts = () => {
   const [modals, setModals] = useState({
@@ -20,6 +21,7 @@ const Accounts = () => {
     confirmPaymentVisible: false,
     changePackageVisible: false,
     suspendAccountVisible: false,
+    changeWiFiVisible: false, 
   });
 
   const [currentAccount, setCurrentAccount] = useState(null);
@@ -46,14 +48,12 @@ const Accounts = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log('response', response)
 
       if (!response.ok) {
         throw new Error("Failed to fetch account data");
       }
 
       const data = await response.json();
-      console.log('data', data)
       if (Array.isArray(data.data)) {
         setTimeout(() => {
           setAccounts(data.data);
@@ -94,6 +94,20 @@ const Accounts = () => {
 
   const handleChangePackageSubmit = (newPackage) => {
     handleModalClose("changePackageVisible");
+  };
+
+  const handleChangeWiFiSubmit = () => {
+    handleModalClose("changeWiFiVisible");
+  };
+
+  const updateAccountStatus = (accountNumber, suspended) => {
+    setAccounts((prevAccounts) =>
+      prevAccounts.map((account) =>
+        account.account_number === accountNumber
+          ? { ...account, status: suspended ? "suspended" : "active" }
+          : account
+      )
+    );
   };
 
   return (
@@ -167,6 +181,16 @@ const Accounts = () => {
                 ? "Unsuspend Account"
                 : "Suspend Account"}
             </Button>
+
+            {account.account_type !== "hotspot" && (
+              <Button
+                mode="contained"
+                style={styles.changeWiFiButton}
+                onPress={() => handleModalOpen("changeWiFiVisible", account)}
+              >
+                Change WiFi
+              </Button>
+            )}
           </View>
         ))
       )}
@@ -176,6 +200,7 @@ const Accounts = () => {
         onClose={() => handleModalClose("makePaymentVisible")}
         onSubmit={handlePaymentSubmit}
         accountId={currentAccount ? currentAccount.id : null}
+        accountNumber={currentAccount ? currentAccount.account_number : null}
       />
 
       <Confirmpayment
@@ -190,6 +215,7 @@ const Accounts = () => {
         onSubmit={handleChangePackageSubmit}
         accountId={currentAccount ? currentAccount.id : null}
         accountNumber={currentAccount ? currentAccount.account_number : null}
+        account_type={currentAccount ? currentAccount.account_type : null}
       />
 
       <SuspendAccountModal
@@ -197,6 +223,17 @@ const Accounts = () => {
         onClose={() => handleModalClose("suspendAccountVisible")}
         onSubmit={handleSuspendSubmit}
         accountNumber={currentAccount ? currentAccount.account_number : null}
+        isSuspended={
+          currentAccount ? currentAccount.status === "suspended" : false
+        }
+        onUpdateAccountStatus={updateAccountStatus}
+      />
+
+      <ChangeWiFiModal
+        visible={modals.changeWiFiVisible}
+        onClose={() => handleModalClose("changeWiFiVisible")}
+        onSubmit={handleChangeWiFiSubmit}
+        accountId={currentAccount ? currentAccount.id : null}
       />
     </ScrollView>
   );
@@ -247,6 +284,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 5,
     paddingHorizontal: 10,
+  },
+  changeWiFiButton: {
+    marginTop: 10,
+    backgroundColor: "#00BFFF",
   },
 });
 
