@@ -21,7 +21,9 @@ const Settings = () => {
       });
     } catch (error) {
       Alert.alert("Logout Failed", "Failed to logout. Please try again.");
+    }finally{
       setLoading(false);
+
     }
   };
 
