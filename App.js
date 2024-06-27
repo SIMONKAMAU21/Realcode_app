@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { ActivityIndicator, StyleSheet } from "react-native";
+import { ActivityIndicator, StyleSheet, Dimensions } from "react-native";
 import Domain from "./pages/Domain";
 import Login from "./pages/Login";
 import Accounts from "./pages/account";
@@ -41,12 +41,13 @@ const HomeTabs = () => {
 const App = () => {
   const [initialRoute, setInitialRoute] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { width, height } = Dimensions.get("window");
 
   useEffect(() => {
     const checkDomain = async () => {
       try {
         const storedDomain = await AsyncStorage.getItem("userdomain");
-        console.log("Stored domain:", storedDomain); 
+        console.log("Stored domain:", storedDomain);
         if (storedDomain) {
           setInitialRoute("Login");
         } else {
@@ -97,26 +98,21 @@ const App = () => {
       <PaperProvider theme={theme}>
         <NavigationContainer>
           <Stack.Navigator initialRouteName={initialRoute}>
-            {initialRoute === "Login" ? (
-              <>
-                <Stack.Screen
-                  options={{ headerShown: false }}
-                  name="Login"
-                  component={Login}
-                />
-                <Stack.Screen
-                  options={{ headerShown: false }}
-                  name="Home"
-                  component={HomeTabs}
-                />
-              </>
-            ) : (
-              <Stack.Screen
-                options={{ headerShown: false }}
-                name="Domain"
-                component={Domain}
-              />
-            )}
+            <Stack.Screen
+              options={{ headerShown: false }}
+              name="Domain"
+              component={Domain}
+            />
+            <Stack.Screen
+              options={{ headerShown: false }}
+              name="Login"
+              component={Login}
+            />
+            <Stack.Screen
+              options={{ headerShown: false }}
+              name="Home"
+              component={HomeTabs}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>

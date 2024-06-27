@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Alert, ToastAndroid } from "react-native";
-import { TextInput, Button, ActivityIndicator, Text } from "react-native-paper";
+import { TextInput, Button, Text } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { useAppSettings } from "../components/utils/Appsettings";
 
 const Domain = ({ navigation }) => {
   const [domain, setDomain] = useState("");
-  const { isLoading } = useAppSettings();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -19,7 +17,7 @@ const Domain = ({ navigation }) => {
       console.log("storedDomain", storedDomain);
     };
     checkDomain();
-  }, []);
+  }, [navigation]);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -34,7 +32,10 @@ const Domain = ({ navigation }) => {
         if (response.data.data === "Successful") {
           await AsyncStorage.setItem("userdomain", domain);
           ToastAndroid.show(response.data.message, ToastAndroid.SHORT);
-          navigation.navigate("Login");
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Login" }],
+          });
           setDomain("");
         } else {
           Alert.alert("Invalid domain", "The provided domain is not allowed.");

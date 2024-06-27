@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, Image, Button, Alert } from "react-native";
+import { View, StyleSheet, Text, Image, Button, Alert, Dimensions } from "react-native";
 import { useAppSettings } from "../components/utils/Appsettings";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -8,6 +8,8 @@ const Settings = () => {
   const { data: appSettings, isLoading, isError, error } = useAppSettings();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
+  
+  const { width, height } = Dimensions.get("window");
 
   const handleLogout = async () => {
     try {
@@ -47,20 +49,24 @@ const Settings = () => {
         disabled={loading}
         onPress={handleLogout}
       />
-      <View style={styles.container}>
+      <View style={[styles.container, { height: height * 0.8 }]}>
         {appSettings && (
           <>
             {appSettings.logo && (
               <Image
                 source={{ uri: appSettings.logo }}
-                style={styles.logo}
+                style={[styles.logo, { width: width * 0.9, height: width * 0.9 }]}
                 resizeMode="contain"
               />
             )}
             <View
               style={[
                 styles.settingContainer,
-                { backgroundColor: appSettings.primary_color },
+                {
+                  backgroundColor: appSettings.primary_color,
+                  width: width * 0.9,
+                  height: height * 0.4,
+                },
               ]}
             >
               <Text style={styles.settingItem}>
@@ -84,21 +90,16 @@ const Settings = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 2,
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    height: "90vh",
-    backgroundColor: "white",
+    // backgroundColor: "red",
   },
   logo: {
-    width: 350,
-    height: 350,
     marginBottom: 20,
   },
   settingContainer: {
-    width: "90%",
     padding: 16,
-    height: "40%",
     borderRadius: 8,
     marginBottom: 20,
   },
