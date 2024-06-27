@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, Image, Button, Alert, Dimensions } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  Button,
+  Alert,
+  Dimensions,
+} from "react-native";
 import { useAppSettings } from "../components/utils/Appsettings";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -8,7 +16,7 @@ const Settings = () => {
   const { data: appSettings, isLoading, isError, error } = useAppSettings();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
-  
+
   const { width, height } = Dimensions.get("window");
 
   const handleLogout = async () => {
@@ -21,9 +29,8 @@ const Settings = () => {
       });
     } catch (error) {
       Alert.alert("Logout Failed", "Failed to logout. Please try again.");
-    }finally{
+    } finally {
       setLoading(false);
-
     }
   };
 
@@ -57,7 +64,10 @@ const Settings = () => {
             {appSettings.logo && (
               <Image
                 source={{ uri: appSettings.logo }}
-                style={[styles.logo, { width: width * 0.9, height: width * 0.9 }]}
+                style={[
+                  styles.logo,
+                  { width: width * 0.5, height: width * 0.9 },
+                ]}
                 resizeMode="contain"
               />
             )}
@@ -67,7 +77,7 @@ const Settings = () => {
                 {
                   backgroundColor: appSettings.primary_color,
                   width: width * 0.9,
-                  height: height * 0.4,
+                  height: height * 0.3,
                 },
               ]}
             >
@@ -93,21 +103,22 @@ const Settings = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
-    // backgroundColor: "red",
   },
   logo: {
-    marginBottom: 20,
+    marginBottom: 10,
+    border: "2px solid black",
   },
   settingContainer: {
     padding: 16,
     borderRadius: 8,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   settingItem: {
     marginBottom: 10,
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight:"bold",
+    // color:"white"
   },
 });
 

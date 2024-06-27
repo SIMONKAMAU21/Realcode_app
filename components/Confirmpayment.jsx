@@ -43,7 +43,7 @@ export default function Confirmpayment({ visible, onSubmit, onClose }) {
       if (error.response && error.response.data && error.response.data.data) {
         const { transaction_id: transactionIdErrors } = error.response.data.data;
         if (transactionIdErrors && transactionIdErrors.length > 0) {
-          Alert.alert('Validation Error', transactionIdErrors[0]);
+          Alert.alert('Validation ', transactionIdErrors[0]);
         } else {
           Alert.alert('Error', 'Failed to confirm payment. Please try again later.');
         }
