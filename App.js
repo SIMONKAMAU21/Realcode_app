@@ -46,6 +46,7 @@ const App = () => {
     const checkDomain = async () => {
       try {
         const storedDomain = await AsyncStorage.getItem("userdomain");
+        console.log("Stored domain:", storedDomain); 
         if (storedDomain) {
           setInitialRoute("Login");
         } else {
@@ -68,7 +69,7 @@ const App = () => {
         if (update.isAvailable) {
           const { isNew } = await Updates.fetchUpdateAsync();
           if (isNew) {
-            Updates.reloadAsync(); 
+            await Updates.reloadAsync();
           }
         }
       } catch (error) {

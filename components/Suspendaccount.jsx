@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React from "react";
+import React, { useState } from "react";
 import {
   Alert,
   Modal,
@@ -18,8 +18,11 @@ const SuspendAccountModal = ({
   isSuspended,
   onUpdateAccountStatus,
 }) => {
+
+  const[ loading,setLoading] = useState(false)
   const handleSuspendAccountSubmit = async () => {
     try {
+      setLoading(true)
       const domain = await AsyncStorage.getItem("userdomain");
       const token = await AsyncStorage.getItem("userToken");
 
@@ -59,6 +62,8 @@ const SuspendAccountModal = ({
       }
     } catch (error) {
       Alert.alert("Error", "Failed to suspend account. " + error.message);
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -90,6 +95,8 @@ const SuspendAccountModal = ({
               mode="contained"
               style={styles.submitButton}
               onPress={handleSuspendAccountSubmit}
+              loading={loading}
+              disabled={loading}
             >
               {isSuspended ? "Unsuspend" : "Suspend"}
             </Button>

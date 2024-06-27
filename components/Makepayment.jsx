@@ -1,26 +1,29 @@
 import React, { useState } from 'react';
-import { Modal, StyleSheet, Text, View, Alert } from 'react-native';
+import { Modal, StyleSheet, Text, View, Alert, ActivityIndicator } from 'react-native';
 import { Button, TextInput, useTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-export default function MakePayment({ visible, onClose ,accountNumber}) {
+export default function MakePayment({ visible, onClose, accountNumber }) {
   const [amount, setAmount] = useState('');
   const [telephone, setTelephone] = useState('');
-
+  const [loading, setLoading] = useState(false);
 
   const handleInitiatePayment = async () => {
     try {
+      setLoading(true);
       const domain = await AsyncStorage.getItem('userdomain');
       const token = await AsyncStorage.getItem('userToken');
 
       if (!domain || !token) {
-        Alert.alert('Error', 'Domain or token not found. Please try again.');
+        Alert.alert('Error', 'Domain or access not found. Please try again.');
+        setLoading(false);
         return;
       }
 
       if (!telephone || !amount) {
         Alert.alert('Validation Error', 'Please fill in all fields.');
+        setLoading(false);
         return;
       }
 
@@ -29,7 +32,7 @@ export default function MakePayment({ visible, onClose ,accountNumber}) {
         {
           telephone: telephone,
           amount: amount,
-          account_number :accountNumber
+          account_number: accountNumber,
         },
         {
           headers: {
@@ -40,13 +43,14 @@ export default function MakePayment({ visible, onClose ,accountNumber}) {
       const data = response.data;
       if (data.success) {
         Alert.alert('Payment Initiated', data.message);
-        onClose(); 
+        onClose();
       } else {
         Alert.alert('Payment Initiation Failed', data.message);
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to initiate payment. Please try again.');
-      console.error('Initiate payment error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,14 +78,16 @@ export default function MakePayment({ visible, onClose ,accountNumber}) {
             onChangeText={setTelephone}
             keyboardType="phone-pad"
           />
-          <View style={styles.modalButtons}>
-            <Button mode="contained" style={styles.closeButton} onPress={onClose}>
-              Close
-            </Button>
-            <Button mode="contained" style={styles.submitButton} onPress={handleInitiatePayment}>
-              Initiate
-            </Button>
-          </View>
+         
+            <View style={styles.modalButtons}>
+              <Button mode="contained" style={styles.closeButton} onPress={onClose} >
+                Close
+              </Button>
+              <Button mode="contained" style={styles.submitButton} onPress={handleInitiatePayment} loading={loading} disabled={loading}>
+                Initiate
+              </Button>
+            </View>
+          
         </View>
       </View>
     </Modal>

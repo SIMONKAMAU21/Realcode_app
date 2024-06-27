@@ -7,13 +7,14 @@ import { ToastAndroid } from 'react-native';
 
 export default function Confirmpayment({ visible, onSubmit, onClose }) {
   const [transactionId, setTransactionId] = useState('');
+  const [loading,setLoading] = useState(false)
 
   const handleConfirmPayment = async () => {
     try {
+      setLoading(true)
       const domain = await AsyncStorage.getItem('userdomain');
       const token = await AsyncStorage.getItem('userToken');
 
-      // Validate domain and token
       if (!domain || !token) {
         Alert.alert('Error', 'Domain or token not found. Please try again.');
         return;
@@ -33,15 +34,17 @@ export default function Confirmpayment({ visible, onSubmit, onClose }) {
 
       const data = response.data;
       if (data.success) {
-        ToastAndroid.show(data.message, ToastAndroid.TOP);
+        // ToastAndroid.show(data.message, ToastAndroid.TOP);
         Alert.alert('Payment Confirmed', data.message);
-        onSubmit(); // Close modal or handle success action
+        onSubmit(); 
+        setTransactionId("")
       } else {
         Alert.alert('Payment Confirmation Failed', data.message);
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to confirm payment. Please try again.');
-      console.error('Confirm payment error:', error);
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -60,7 +63,7 @@ export default function Confirmpayment({ visible, onSubmit, onClose }) {
             <Button style={styles.closeButton} mode='contained' onPress={onClose}>
               Close
             </Button>
-            <Button style={styles.submitButton} mode='contained' onPress={handleConfirmPayment}>
+            <Button style={styles.submitButton} mode='contained' loading={loading} disabled={loading} onPress={handleConfirmPayment}>
               Submit
             </Button>
           </View>

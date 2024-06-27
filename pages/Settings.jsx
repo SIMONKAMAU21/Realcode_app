@@ -13,7 +13,10 @@ const Settings = () => {
     try {
       setLoading(true);
       await AsyncStorage.removeItem("userToken");
-      navigation.navigate("Login");
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
     } catch (error) {
       Alert.alert("Logout Failed", "Failed to logout. Please try again.");
       setLoading(false);
@@ -90,7 +93,6 @@ const styles = StyleSheet.create({
   logo: {
     width: 350,
     height: 350,
-
     marginBottom: 20,
   },
   settingContainer: {

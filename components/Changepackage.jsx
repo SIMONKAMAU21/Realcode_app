@@ -10,37 +10,33 @@ export default function ChangePackageModal({ visible, onClose, onSubmit, account
   const [selectedPackage, setSelectedPackage] = useState('');
   const [packages, setPackages] = useState([]);
   const [isHotspot, setIsHotspot] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (visible && accountId) {
       fetchPackages(accountId);
-      if (account_type === 'Hotspot') {
-        setIsHotspot(true);
-      } else {
-        setIsHotspot(false);
-      }
+      setIsHotspot(account_type === 'Hotspot');
     }
   }, [visible, accountId, account_type]);
 
   const fetchPackages = async (accountId) => {
-    const domain = await AsyncStorage.getItem("userdomain")
-    const apiUrl = `https://${domain}/api/packages/list?id=${accountId}`;
-    const token = await AsyncStorage.getItem("userToken");
-
     try {
+      const domain = await AsyncStorage.getItem('userdomain');
+      const token = await AsyncStorage.getItem('userToken');
+      const apiUrl = `https://${domain}/api/packages/list?id=${accountId}`;
+
       const response = await axios.get(apiUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.data.success) {
         setPackages(response.data.data);
-        ToastAndroid.show(response.data.message, ToastAndroid.TOP);
+        ToastAndroid.show(response.data.message, ToastAndroid.SHORT);
       } else {
         Alert.alert('Error', response.data.message || 'Failed to fetch packages.');
       }
     } catch (error) {
+      console.error(error);
       Alert.alert('Error', 'Failed to fetch packages. Please try again later.');
     }
   };
@@ -50,18 +46,16 @@ export default function ChangePackageModal({ visible, onClose, onSubmit, account
       Alert.alert('Error', 'Please select a package.');
       return;
     }
-    const domain = await AsyncStorage.getItem("userdomain");
+    setLoading(true);
     try {
-      const apiUrl = `https://${domain}/api/change/package`;
+      const domain = await AsyncStorage.getItem('userdomain');
       const token = await AsyncStorage.getItem('userToken');
+      const apiUrl = `https://${domain}/api/change/package`;
+
       const response = await axios.post(
         apiUrl,
         { account_id: accountId, package_id: selectedPackage },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.data.success) {
@@ -69,37 +63,44 @@ export default function ChangePackageModal({ visible, onClose, onSubmit, account
         onSubmit(selectedPackage);
         onClose();
       } else {
-        Alert.alert('Error', response.data.message || 'Failed to change package.');
+        Alert.alert('Opps', response.data.message);
       }
     } catch (error) {
-      console.error('Error changing package:', error);
+      console.error(error);
       Alert.alert('Error', 'Failed to change package. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent={true}
-      animationType='slide'
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType='slide' onRequestClose={onClose}>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>CHANGE PACKAGE FOR :{accountNumber}</Text>
+          <Text style={styles.modalTitle}>CHANGE PACKAGE FOR: {accountNumber}</Text>
           <Picker
             selectedValue={selectedPackage}
             onValueChange={(itemValue) => setSelectedPackage(itemValue)}
             style={styles.picker}
-            enabled={!isHotspot}
+            enabled={!isHotspot && !loading}
           >
             {packages.map((pkg) => (
               <Picker.Item key={pkg.id} label={`${pkg.bandwidth_name} @ KES ${pkg.price}`} value={pkg.id} />
             ))}
           </Picker>
           <View style={styles.modalButtons}>
-            <Button mode='contained' style={styles.closeButton} onPress={onClose}>Close</Button>
-            <Button mode='contained' style={styles.submitButton} onPress={handleSubmit}>Change Package</Button>
+            <Button mode='contained' style={styles.closeButton} onPress={onClose} disabled={loading}>
+              Close
+            </Button>
+            <Button
+              mode='contained'
+              style={styles.submitButton}
+              onPress={handleSubmit}
+              loading={loading}
+              disabled={loading}
+            >
+              Change Package
+            </Button>
           </View>
         </View>
       </View>

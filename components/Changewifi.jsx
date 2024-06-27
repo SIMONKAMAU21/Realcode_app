@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function ChangeWiFiModal({ visible, onClose, onSubmit, accountId }) {
   const [wifiName, setWifiName] = useState('');
   const [wifiPassword, setWifiPassword] = useState('');
+  const [loading , setLoading] = useState(false)
 
   const handleSubmit = async () => {
     if (!wifiName || !wifiPassword) {
@@ -30,6 +31,7 @@ if(wifiPassword.length < 8){
     const token = await AsyncStorage.getItem('userToken');
 
     try {
+      setLoading(true)
       const response = await axios.post(
         apiUrl,
         { wifi_name: wifiName, wifi_password: wifiPassword, account_id: accountId },
@@ -51,6 +53,8 @@ if(wifiPassword.length < 8){
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to change WiFi credentials. Please try again later.');
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -79,7 +83,7 @@ if(wifiPassword.length < 8){
           />
           <View style={styles.modalButtons}>
             <Button mode='contained' style={styles.closeButton} onPress={onClose}>Close</Button>
-            <Button mode='contained' style={styles.submitButton} onPress={handleSubmit}>Change WiFi</Button>
+            <Button mode='contained' style={styles.submitButton} onPress={handleSubmit} loading={loading} disabled={loading}>Change WiFi</Button>
           </View>
         </View>
       </View>

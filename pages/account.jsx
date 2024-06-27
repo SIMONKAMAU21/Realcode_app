@@ -21,7 +21,7 @@ const Accounts = () => {
     confirmPaymentVisible: false,
     changePackageVisible: false,
     suspendAccountVisible: false,
-    changeWiFiVisible: false, 
+    changeWiFiVisible: false,
   });
 
   const [currentAccount, setCurrentAccount] = useState(null);
@@ -173,7 +173,7 @@ const Accounts = () => {
                 {
                   backgroundColor:
                     account.status === "suspended" ? "#00ff00" : "#ff0000",
-                }, // Dynamic background color based on account status
+                },
               ]}
               onPress={() => handleModalOpen("suspendAccountVisible", account)}
             >
