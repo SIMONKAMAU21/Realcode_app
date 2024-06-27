@@ -3,15 +3,14 @@ import { Modal, StyleSheet, Text, View, Alert } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { ToastAndroid } from 'react-native';
 
 export default function Confirmpayment({ visible, onSubmit, onClose }) {
   const [transactionId, setTransactionId] = useState('');
-  const [loading,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const handleConfirmPayment = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const domain = await AsyncStorage.getItem('userdomain');
       const token = await AsyncStorage.getItem('userToken');
 
@@ -23,7 +22,7 @@ export default function Confirmpayment({ visible, onSubmit, onClose }) {
       const response = await axios.post(
         `https://${domain}/api/confirm/payment`,
         {
-          transaction_id: transactionId, 
+          transaction_id: transactionId,
         },
         {
           headers: {
@@ -34,17 +33,25 @@ export default function Confirmpayment({ visible, onSubmit, onClose }) {
 
       const data = response.data;
       if (data.success) {
-        // ToastAndroid.show(data.message, ToastAndroid.TOP);
         Alert.alert('Payment Confirmed', data.message);
-        onSubmit(); 
-        setTransactionId("")
+        onSubmit();
+        setTransactionId(''); 
       } else {
         Alert.alert('Payment Confirmation Failed', data.message);
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to confirm payment. Please try again.');
-    }finally{
-      setLoading(false)
+      if (error.response && error.response.data && error.response.data.data) {
+        const { transaction_id: transactionIdErrors } = error.response.data.data;
+        if (transactionIdErrors && transactionIdErrors.length > 0) {
+          Alert.alert('Validation Error', transactionIdErrors[0]);
+        } else {
+          Alert.alert('Error', 'Failed to confirm payment. Please try again later.');
+        }
+      } else {
+        Alert.alert('Error', 'Failed to confirm payment. Please try again later.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -63,7 +70,13 @@ export default function Confirmpayment({ visible, onSubmit, onClose }) {
             <Button style={styles.closeButton} mode='contained' onPress={onClose}>
               Close
             </Button>
-            <Button style={styles.submitButton} mode='contained' loading={loading} disabled={loading} onPress={handleConfirmPayment}>
+            <Button
+              style={styles.submitButton}
+              mode='contained'
+              loading={loading}
+              disabled={loading}
+              onPress={handleConfirmPayment}
+            >
               Submit
             </Button>
           </View>
@@ -97,6 +110,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
+    paddingHorizontal: 10,
   },
   modalButtons: {
     flexDirection: 'row',

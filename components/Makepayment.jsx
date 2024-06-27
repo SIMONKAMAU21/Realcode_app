@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, StyleSheet, Text, View, Alert, ActivityIndicator } from 'react-native';
+import { Modal, StyleSheet, Text, View, Alert } from 'react-native';
 import { Button, TextInput, useTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -22,7 +22,13 @@ export default function MakePayment({ visible, onClose, accountNumber }) {
       }
 
       if (!telephone || !amount) {
-        Alert.alert('Validation Error', 'Please fill in all fields.');
+        Alert.alert('Validation ', 'Please fill in all fields.');
+        setLoading(false);
+        return;
+      }
+
+      if (!telephone.startsWith('0')) {
+        Alert.alert('Validation ', 'The telephone number must start with 0.');
         setLoading(false);
         return;
       }
@@ -44,6 +50,8 @@ export default function MakePayment({ visible, onClose, accountNumber }) {
       if (data.success) {
         Alert.alert('Payment Initiated', data.message);
         onClose();
+        setAmount("")
+        setTelephone("")
       } else {
         Alert.alert('Payment Initiation Failed', data.message);
       }
@@ -78,16 +86,14 @@ export default function MakePayment({ visible, onClose, accountNumber }) {
             onChangeText={setTelephone}
             keyboardType="phone-pad"
           />
-         
-            <View style={styles.modalButtons}>
-              <Button mode="contained" style={styles.closeButton} onPress={onClose} >
-                Close
-              </Button>
-              <Button mode="contained" style={styles.submitButton} onPress={handleInitiatePayment} loading={loading} disabled={loading}>
-                Initiate
-              </Button>
-            </View>
-          
+          <View style={styles.modalButtons}>
+            <Button mode="contained" style={styles.closeButton} onPress={onClose}>
+              Close
+            </Button>
+            <Button mode="contained" style={styles.submitButton} onPress={handleInitiatePayment} loading={loading} disabled={loading}>
+              Initiate
+            </Button>
+          </View>
         </View>
       </View>
     </Modal>

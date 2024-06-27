@@ -12,6 +12,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Updates from 'expo-updates';
 import Icon from 'react-native-vector-icons/Ionicons';
+import MandatoryUpdateScreen from './components/MadatoryUpdate';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -67,19 +68,21 @@ const App = () => {
       try {
         const update = await Updates.checkForUpdateAsync();
         if (update.isAvailable) {
-          const { isNew } = await Updates.fetchUpdateAsync();
-          if (isNew) {
-            await Updates.reloadAsync();
-          }
+          // Navigate to mandatory update screen or show update dialog
+          navigation.navigate('MandatoryUpdateScreen');
+        } else {
+          // Continue with normal app flow
+          checkDomain();
         }
       } catch (error) {
         console.error('Error checking for updates', error);
+        // Handle error, continue with normal flow
+        checkDomain();
       }
     };
-
+  
     checkForUpdates();
   }, []);
-
   const theme = {
     ...DefaultTheme,
     colors: {
@@ -101,6 +104,8 @@ const App = () => {
             <Stack.Screen options={{ headerShown: false }} name='Domain' component={Domain} />
             <Stack.Screen options={{ headerShown: false }} name='Login' component={Login} />
             <Stack.Screen options={{ headerShown: false }} name='Home' component={HomeTabs} />
+            <Stack.Screen options={{ headerShown: false }} name='MandatoryUpdateScreen' component={MandatoryUpdateScreen} />
+
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>

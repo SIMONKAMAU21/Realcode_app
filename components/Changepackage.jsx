@@ -5,19 +5,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 
-export default function ChangePackageModal({ visible, onClose, onSubmit, accountId, accountNumber, account_type }) {
+export default function ChangePackageModal({ visible, onClose, onSubmit, accountId, accountNumber }) {
   const theme = useTheme();
   const [selectedPackage, setSelectedPackage] = useState('');
   const [packages, setPackages] = useState([]);
-  const [isHotspot, setIsHotspot] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (visible && accountId) {
       fetchPackages(accountId);
-      setIsHotspot(account_type === 'Hotspot');
     }
-  }, [visible, accountId, account_type]);
+  }, [visible, accountId]);
 
   const fetchPackages = async (accountId) => {
     try {
@@ -66,7 +64,6 @@ export default function ChangePackageModal({ visible, onClose, onSubmit, account
         Alert.alert('Opps', response.data.message);
       }
     } catch (error) {
-      console.error(error);
       Alert.alert('Error', 'Failed to change package. Please try again later.');
     } finally {
       setLoading(false);
@@ -82,7 +79,6 @@ export default function ChangePackageModal({ visible, onClose, onSubmit, account
             selectedValue={selectedPackage}
             onValueChange={(itemValue) => setSelectedPackage(itemValue)}
             style={styles.picker}
-            enabled={!isHotspot && !loading}
           >
             {packages.map((pkg) => (
               <Picker.Item key={pkg.id} label={`${pkg.bandwidth_name} @ KES ${pkg.price}`} value={pkg.id} />
