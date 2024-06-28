@@ -66,8 +66,10 @@ const Login = ({ navigation }) => {
     } catch (error) {
       Alert.alert(
         "Login Failed",
+        error.response?.data?.message ||
         "An error occurred during login. Please try again."
       );
+      // ToastAndroid.show(error.response?.data?.message,ToastAndroid.LONG)
     } finally {
       setLoading(false);
     }

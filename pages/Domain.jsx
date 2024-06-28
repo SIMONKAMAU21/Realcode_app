@@ -14,7 +14,6 @@ const Domain = ({ navigation }) => {
       if (storedDomain) {
         navigation.navigate("Login");
       }
-      console.log("storedDomain", storedDomain);
     };
     checkDomain();
   }, [navigation]);
@@ -104,8 +103,10 @@ const styles = StyleSheet.create({
     width: "80%",
     padding: 16,
     marginTop: 20,
+    backgroundColor: "#3c8dbc",
     borderRadius: 10,
     alignItems: "center",
+    justifyContent: "center",
   },
   input: {
     width: "100%",
@@ -121,6 +122,7 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontStyle: "italic",
     fontFamily: "serif",
+    color: "#3c8dbc",
   },
 });
 
