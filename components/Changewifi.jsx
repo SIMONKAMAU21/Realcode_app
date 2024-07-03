@@ -3,11 +3,14 @@ import { Modal, StyleSheet, View, Alert, ToastAndroid } from 'react-native';
 import { Button, Text, TextInput, useTheme } from 'react-native-paper';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppSettings } from './utils/Appsettings';
 
 export default function ChangeWiFiModal({ visible, onClose, onSubmit, accountId }) {
   const [wifiName, setWifiName] = useState('');
   const [wifiPassword, setWifiPassword] = useState('');
   const [loading , setLoading] = useState(false)
+  const { data: appSettings, isLoading, isError, error } = useAppSettings();
+
 
   const handleSubmit = async () => {
     if (!wifiName || !wifiPassword) {
@@ -57,7 +60,22 @@ if(wifiPassword.length < 8){
       setLoading(false)
     }
   };
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator animating={true} color="#0077b6" />
+      </View>
+    );
+  }
 
+  if (isError) {
+    return (
+      <View style={styles.container}>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
+ 
   return (
     <Modal
       visible={visible}
@@ -71,15 +89,20 @@ if(wifiPassword.length < 8){
           <TextInput
             label='WiFi Name'
             value={wifiName}
+            mode={"outlined"}
             onChangeText={setWifiName}
             style={styles.input}
+            theme={{colors:{primary:appSettings.primary_color}}}
           />
           <TextInput
             label='WiFi Password'
             value={wifiPassword}
+            mode={"outlined"}
             onChangeText={setWifiPassword}
             secureTextEntry
             style={styles.input}
+            theme={{colors:{primary:appSettings.primary_color}}}
+
           />
           <View style={styles.modalButtons}>
             <Button mode='contained' style={styles.closeButton} onPress={onClose}>Close</Button>

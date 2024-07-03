@@ -15,6 +15,7 @@ const Login = ({ navigation }) => {
 
   useEffect(() => {
     const checkToken = async () => {
+      setLoading(true)
       try {
         const token = await AsyncStorage.getItem("userToken");
         if (token) {
@@ -35,6 +36,8 @@ const Login = ({ navigation }) => {
         }
       } catch (error) {
         Alert.alert("Error", "Failed to retrieve data. Please try again.");
+      }finally{
+        setLoading(false)
       }
     };
     checkToken();

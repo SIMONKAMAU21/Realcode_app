@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, View, Alert } from 'react-native';
-import { Button, TextInput, useTheme } from 'react-native-paper';
+import { ActivityIndicator, Button, TextInput, useTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useAppSettings } from './utils/Appsettings';
@@ -90,19 +90,21 @@ export default function MakePayment({ visible, onClose, accountNumber }) {
           <Text style={styles.modalTitle}>MAKE PAYMENT</Text>
           <TextInput
           style={styles.input}
-            placeholder="Amount"
+          mode="outlined"
+          label={"Amount"}
             value={amount}
             onChangeText={setAmount}
             keyboardType="numeric"
-            theme={{colors:{primary:"black"}}}
+            theme={{colors:{primary:appSettings.primary_color}}}
           />
           <TextInput
             style={styles.input}
-            placeholder="Telephone to pay from"
+            label={"Telephone to pay from "}
+            mode='outlined'
             value={telephone}
             onChangeText={setTelephone}
             keyboardType="phone-pad"
-            theme={{colors:{primary:"black"}}}
+            theme={{colors:{primary:appSettings.primary_color}}}
 
           />
           <View style={styles.modalButtons}>
@@ -141,7 +143,7 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 20,
     borderColor: '#ccc',
-    borderWidth: 1,
+    // borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
   },

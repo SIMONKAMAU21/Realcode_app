@@ -3,10 +3,12 @@ import { Modal, StyleSheet, Text, View, Alert } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { useAppSettings } from './utils/Appsettings';
 
 export default function Confirmpayment({ visible, onSubmit, onClose }) {
   const [transactionId, setTransactionId] = useState('');
   const [loading, setLoading] = useState(false);
+  const { data: appSettings, isLoading, isError, error } = useAppSettings();
 
   const handleConfirmPayment = async () => {
     try {
@@ -54,7 +56,21 @@ export default function Confirmpayment({ visible, onSubmit, onClose }) {
       setLoading(false);
     }
   };
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator animating={true} color="#0077b6" />
+      </View>
+    );
+  }
 
+  if (isError) {
+    return (
+      <View style={styles.container}>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
   return (
     <Modal visible={visible} onRequestClose={onClose} animationType='slide' transparent={true}>
       <View style={styles.modalContainer}>
@@ -62,9 +78,12 @@ export default function Confirmpayment({ visible, onSubmit, onClose }) {
           <Text style={styles.modalTitle}>Confirm payment form</Text>
           <TextInput
             style={styles.input}
+            label={"Enter Mpesa Transaction Code"}
             value={transactionId}
+            mode='outlined'
             onChangeText={setTransactionId}
-            placeholder='Enter Mpesa Transaction Code'
+            // placeholder='Enter Mpesa Transaction Code'
+            theme={{colors:{primary:appSettings.primary_color}}}
           />
           <View style={styles.modalButtons}>
             <Button style={styles.closeButton} mode='contained' onPress={onClose}>
@@ -108,7 +127,6 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 20,
     borderColor: '#ccc',
-    borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
   },
