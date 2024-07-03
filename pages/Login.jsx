@@ -113,6 +113,7 @@ const Login = ({ navigation }) => {
           value={username}
           onChangeText={(text) => setUsername(text)}
           style={styles.input}
+          theme={{colors:{primary:"black"}}}
         />
         <TextInput
           mode="outlined"
@@ -122,6 +123,8 @@ const Login = ({ navigation }) => {
           onChangeText={(text) => setPassword(text)}
           secureTextEntry
           style={styles.input}
+          theme={{colors:{primary:"black"}}}
+
         />
         <Button
           mode="contained"

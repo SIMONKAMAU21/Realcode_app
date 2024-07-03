@@ -3,9 +3,11 @@ import { Modal, StyleSheet, Text, View, Alert } from 'react-native';
 import { Button, TextInput, useTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { useAppSettings } from './utils/Appsettings';
 
 export default function MakePayment({ visible, onClose, accountNumber }) {
   const [amount, setAmount] = useState('');
+  const { data: appSettings, isLoading, isError, error } = useAppSettings();
   const [telephone, setTelephone] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -61,7 +63,21 @@ export default function MakePayment({ visible, onClose, accountNumber }) {
       setLoading(false);
     }
   };
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator animating={true} color="#0077b6" />
+      </View>
+    );
+  }
 
+  if (isError) {
+    return (
+      <View style={styles.container}>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
   return (
     <Modal
       visible={visible}
@@ -73,11 +89,12 @@ export default function MakePayment({ visible, onClose, accountNumber }) {
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>MAKE PAYMENT</Text>
           <TextInput
-            style={styles.input}
+          style={styles.input}
             placeholder="Amount"
             value={amount}
             onChangeText={setAmount}
             keyboardType="numeric"
+            theme={{colors:{primary:"black"}}}
           />
           <TextInput
             style={styles.input}
@@ -85,6 +102,8 @@ export default function MakePayment({ visible, onClose, accountNumber }) {
             value={telephone}
             onChangeText={setTelephone}
             keyboardType="phone-pad"
+            theme={{colors:{primary:"black"}}}
+
           />
           <View style={styles.modalButtons}>
             <Button mode="contained" style={styles.closeButton} onPress={onClose}>
