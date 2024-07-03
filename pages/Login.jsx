@@ -35,7 +35,7 @@ const Login = ({ navigation }) => {
           }
         }
       } catch (error) {
-        Alert.alert("Error", "Failed to retrieve data. Please try again.");
+        Alert.alert("Error", "Failed to retrieve data. Please try again later.");
       }finally{
         setLoading(false)
       }
@@ -111,8 +111,7 @@ const Login = ({ navigation }) => {
       >
         <TextInput
           mode="outlined"
-          label="Username"
-          placeholder="Enter username"
+          label="Enter username"
           value={username}
           onChangeText={(text) => setUsername(text)}
           style={styles.input}
@@ -120,8 +119,7 @@ const Login = ({ navigation }) => {
         />
         <TextInput
           mode="outlined"
-          label="Password"
-          placeholder="Enter password"
+          label="Enter password"
           value={password}
           onChangeText={(text) => setPassword(text)}
           secureTextEntry
@@ -169,7 +167,7 @@ const styles = StyleSheet.create({
   input: {
     width: "89%",
     marginBottom: 16,
-    color: "black",
+    // color: "black",
   },
   button: {
     width: "40%",
