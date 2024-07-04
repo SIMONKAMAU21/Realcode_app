@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Alert, ToastAndroid, Image } from "react-native";
+import { View, StyleSheet, ToastAndroid, Image } from "react-native";
 import { TextInput, Button, ActivityIndicator, Text } from "react-native-paper";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -12,10 +12,13 @@ const Login = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [domain, setDomain] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showReloadButton, setShowReloadButton] = useState(false);
 
   useEffect(() => {
     const checkToken = async () => {
-      setLoading(true)
+      setLoading(true);
+      setShowReloadButton(false);
       try {
         const token = await AsyncStorage.getItem("userToken");
         if (token) {
@@ -30,14 +33,15 @@ const Login = ({ navigation }) => {
           if (storedDomain) {
             setDomain(storedDomain);
           } else {
-            Alert.alert("Domain not set", "Please set the domain first.");
+            setErrorMessage("Domain not set. Please set the domain first.");
             navigation.navigate("Domain");
           }
         }
       } catch (error) {
-        Alert.alert("Error", "Failed to retrieve data. Please try again later.");
-      }finally{
-        setLoading(false)
+        setErrorMessage("Failed to retrieve data. Please try again.");
+        setShowReloadButton(true);
+      } finally {
+        setLoading(false);
       }
     };
     checkToken();
@@ -45,6 +49,8 @@ const Login = ({ navigation }) => {
 
   const handleLogin = async () => {
     setLoading(true);
+    setErrorMessage("");
+    setShowReloadButton(false);
     try {
       const response = await axios.post(`https://${domain}/api/login`, {
         email: username,
@@ -64,18 +70,22 @@ const Login = ({ navigation }) => {
         setUsername("");
         setPassword("");
       } else {
-        Alert.alert("Login Failed", data.message);
+        setErrorMessage(data.message);
       }
     } catch (error) {
-      Alert.alert(
-        "Login Failed",
+      setErrorMessage(
         error.response?.data?.message ||
         "An error occurred during login. Please try again."
       );
-      // ToastAndroid.show(error.response?.data?.message,ToastAndroid.LONG)
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleReload = () => {
+    setErrorMessage("");
+    setShowReloadButton(false);
+    checkToken();
   };
 
   if (isLoading) {
@@ -109,6 +119,14 @@ const Login = ({ navigation }) => {
           { backgroundColor: appSettings.primary_color },
         ]}
       >
+        {errorMessage !== "" && (
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        )}
+        {showReloadButton && (
+          <Button mode="contained" onPress={handleReload} style={styles.reloadButton}>
+            Retry
+          </Button>
+        )}
         <TextInput
           mode="outlined"
           label="Enter username"
@@ -125,7 +143,6 @@ const Login = ({ navigation }) => {
           secureTextEntry
           style={styles.input}
           theme={{colors:{primary:"black"}}}
-
         />
         <Button
           mode="contained"
@@ -167,7 +184,6 @@ const styles = StyleSheet.create({
   input: {
     width: "89%",
     marginBottom: 16,
-    // color: "black",
   },
   button: {
     width: "40%",
@@ -178,6 +194,10 @@ const styles = StyleSheet.create({
     color: "red",
     fontStyle: "italic",
     fontFamily: "serif",
+    marginBottom: 16,
+  },
+  reloadButton: {
+    marginBottom: 16,
   },
 });
 
