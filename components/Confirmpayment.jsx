@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, View, Alert } from 'react-native';
-import { Button, TextInput } from 'react-native-paper';
+import { ActivityIndicator, Button, TextInput } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useAppSettings } from './utils/Appsettings';
