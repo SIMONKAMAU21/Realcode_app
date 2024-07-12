@@ -5,13 +5,13 @@ import {
   Alert,
   ScrollView,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import { Text, Button } from "react-native-paper";
 import ChangePackageModal from "../components/Changepackage";
 import Confirmpayment from "../components/Confirmpayment";
 import Makepayment from "../components/Makepayment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ToastAndroid } from "react-native";
 import SuspendAccountModal from "../components/Suspendaccount";
 import ChangeWiFiModal from "../components/Changewifi";
 
@@ -27,6 +27,7 @@ const Accounts = () => {
   const [currentAccount, setCurrentAccount] = useState(null);
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchAccountData();
@@ -34,6 +35,7 @@ const Accounts = () => {
 
   const fetchAccountData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const domain = await AsyncStorage.getItem("userdomain");
       const token = await AsyncStorage.getItem("userToken");
@@ -65,7 +67,7 @@ const Accounts = () => {
         setLoading(false);
       }
     } catch (error) {
-      Alert.alert("Error", "Failed to fetch account data.");
+      setError("Failed to fetch account data");
       setLoading(false);
     }
   };
@@ -112,6 +114,14 @@ const Accounts = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      {error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <Button mode="contained" onPress={fetchAccountData} style={styles.reloadButton}>
+            Reload
+          </Button>
+        </View>
+      )}
       {loading ? (
         <ActivityIndicator size="large" color="#0077b6" />
       ) : (
@@ -288,6 +298,17 @@ const styles = StyleSheet.create({
   changeWiFiButton: {
     marginTop: 10,
     backgroundColor: "#00BFFF",
+  },
+  errorContainer: {
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
+  },
+  reloadButton: {
+    backgroundColor: "#0077b6",
   },
 });
 

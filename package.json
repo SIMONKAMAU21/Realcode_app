@@ -18,7 +18,7 @@
     "@reduxjs/toolkit": "^2.2.5",
     "axios": "^1.7.2",
     "expo-status-bar": "~1.12.1",
-    "expo-updates": "~0.25.17",
+    "expo-updates": "~0.25.18",
     "react": "18.2.0",
     "react-native": "0.74.2",
     "react-native-gesture-handler": "~2.16.1",
